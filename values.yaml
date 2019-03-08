@@ -1,0 +1,83 @@
+name: helm-microservice
+
+replicaCount: 1
+
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 0
+
+image:
+  repository: k8s.gcr.io/echoserver:1.4
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: {}
+
+annotations: {}
+
+service:
+  type: ClusterIP
+  annotations: {}
+  portName: http-internal
+  externalPort: 8080
+  internalPort: 8080
+
+ingress:
+  enabled: false
+  annotations: []
+  tls: {}
+  hosts: []
+  labels: []
+
+livenessProbe:
+  enabled: false
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 30
+  failureThreshold: 3
+
+  # Allows defining own probe for a liveness check. By default HTTP is used with values from service definition`
+  override:
+    enabled: false
+    probe: {}
+
+readinessProbe:
+  enabled: true
+  httpProbePath: /health
+  initialDelaySeconds: 5
+  timeoutSeconds: 3
+  periodSeconds: 20
+
+  # Allows defining own probe for a liveness check. By default HTTP is used with values from service definition`
+  override:
+    enabled: false
+    probe: {}
+
+gcpcreds_file:
+  create: false
+  path: /opt/google/serviceaccount.json
+
+env:
+  INFO_ENABLED: true
+  AUTH_ENABLED: false
+  HEALTH_ENABLED: true
+  LOGGING_PROD_MODE: true
+  GOOGLE_PUBSUB_JSON_FILE: /opt/google/serviceaccount.json
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 100Mi
+
+hack:
+  # Forces recreation of pod on each deployment. Useful when using `latest` tag.
+  # Helm's `--recreate-pods` does the same, but without honoring deployment strategy
+  recreatePod: false
+
+minikube:
+  enabled: false
+  path: "/src"
+  hostPath: "/src"

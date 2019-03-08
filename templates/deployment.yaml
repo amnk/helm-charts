@@ -1,0 +1,108 @@
+{{ $mounts_exist := or .Values.minikube.enabled .Values.gcpcreds_file.create  }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ template "helm-microservice.fullname" . }}
+  labels:
+    app: {{ template "helm-microservice.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  {{- if .Values.updateStrategy }}
+  strategy:
+{{ toYaml .Values.updateStrategy | indent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "helm-microservice.fullname" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        heritage: {{ .Release.Service }}
+        release: {{ .Release.Name }}
+        {{- if .Values.hack.recreatePod }}
+        hackLifecycleTrigger: {{ randAlphaNum 10 }}
+        {{- end }}
+      annotations:
+        {{- range $key, $value := .Values.annotations }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Values.name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: {{ .Values.service.portName }}
+            containerPort: {{ .Values.service.internalPort }}
+        env:
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          {{ if .Values.livenessProbe.override.enabled }}
+{{ toYaml .Values.livenessProbe.override.probe | indent 10 }}
+          httpGet:
+            path: {{ .Values.service.path }}
+            port: {{ .Values.service.internalPort }}
+            scheme: HTTP
+          {{ else }}
+          httpGet:
+            path: {{ .Values.service.path }}
+            port: {{ .Values.service.internalPort }}
+            scheme: HTTP
+          {{ end }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          {{ if .Values.readinessProbe.override.enabled }}
+{{ toYaml .Values.readinessProbe.override.probe | indent 10 }}
+          {{ else }}
+          httpGet:
+            path: {{ .Values.readinessProbe.httpProbePath }}
+            port: {{ .Values.service.internalPort }}
+            scheme: HTTP
+          {{ end }}
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+        {{- end }}
+
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+    {{ if $mounts_exist }}
+        volumeMounts:
+        {{- if .Values.minikube.enabled }}
+          - mountPath: {{ .Values.mountPath }}
+            name: host-source
+        {{- end }}
+        {{- if .Values.gcpcreds_file.create }}
+          - mountPath: {{ .Values.gcpcreds_file.path }}
+            name: gcp-creds
+            subPath: gcp-creds-file
+        {{- end }}
+      volumes:
+      {{- if .Values.minikube.enabled }}
+        - name: host-source
+          hostPath:
+            path: {{ .Values.minikube.path }}/{{ .Values.minikube.hostPath }}
+      {{- end }}
+      {{- if .Values.gcpcreds_file.create }}
+        - name: gcp-creds
+          secret:
+            secretName: {{ template "helm-microservice.fullname" . }}-gcp-secrets
+      {{- end }}
+    {{- end }}
