@@ -1,5 +1,16 @@
 apiVersion: v1
 entries:
+  cert-manager-config:
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2021-07-21T14:12:34.108227836Z"
+    description: A Helm chart for Kubernetes
+    digest: 64c0e387496e25b169b61544f6a16f7b56a5c6aa0ff2a2a74fe7c0272444e530
+    home: https://github.com/jetstack/cert-manager
+    name: cert-manager-config
+    urls:
+    - https://github.com/amnk/helm-charts/releases/download/cert-manager-config-0.1.0/cert-manager-config-0.1.0.tgz
+    version: 0.1.0
   helm-microservice:
   - apiVersion: v1
     appVersion: "1.0"
@@ -16,4 +27,4 @@ entries:
     urls:
     - https://github.com/amnk/helm-charts/releases/download/helm-microservice-0.1.1/helm-microservice-0.1.1.tgz
     version: 0.1.1
-generated: "2021-07-21T14:05:43.785841341Z"
+generated: "2021-07-21T14:12:34.108237136Z"
