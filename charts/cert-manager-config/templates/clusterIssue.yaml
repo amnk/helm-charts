@@ -1,0 +1,13 @@
+{{- if .Values.issuer.enabled -}}
+apiVersion: cert-manager.io/v1alpha2
+kind: {{ .Values.issuer.kind }}
+metadata:
+  name: {{ .Values.issuer.name }}
+  labels:
+    app: {{ template "cert-manager-config.name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+{{ toYaml .Values.issuer.spec | indent 2 }}
+{{- end }}

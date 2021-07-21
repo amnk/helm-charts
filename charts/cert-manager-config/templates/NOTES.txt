@@ -1,0 +1,1 @@
+Cert-manager configuration was deployed

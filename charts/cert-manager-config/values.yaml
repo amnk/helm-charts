@@ -1,0 +1,15 @@
+certificate:
+  enabled: false
+  name: test
+  spec: {}
+
+issuer:
+  enabled: false
+  kind: ClusterIssuer
+  name: letsencrypt-prod
+  spec: {}
+
+secret:
+  enabled: false
+  key: babelfish.json
+  value: "test"
