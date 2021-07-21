@@ -1,0 +1,11 @@
+apiVersion: v1
+appVersion: "1.0"
+description: A Helm chart for Kubernetes
+name: helm-microservice
+version: 0.1.0
+home: https://github.com/skaeladmin/infra
+sources:
+  - https://github.com/skaeladmin/infra/charts/helm-microservice
+maintainers:
+  - name: amnk
+    email: amnk@users.noreply.github.com

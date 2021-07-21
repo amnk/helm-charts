@@ -1,0 +1,119 @@
+{{- if .Values.pg_dump_hook.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.pg_dump_hook.name }}-{{ template "helm-microservice.fullname" . }}
+  labels:
+    umbrella: {{ template "helm-microservice.fullname" . }}
+    app: {{ .Values.pg_dump_hook.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  {{- if .Values.pg_dump_hook.annotations }}
+  annotations:
+    {{- range $key, $value := .Values.pg_dump_hook.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  {{- end }}
+spec:
+  ttlSecondsAfterFinished: {{ .Values.pg_dump_hook.ttlSecondsAfterFinished }}
+  backoffLimit: 100
+  replicas: {{ .Values.pg_dump_hook.replicaCount }}
+  {{- if .Values.pg_dump_hook.updateStrategy }}
+  strategy:
+{{ toYaml .Values.pg_dump_hook.updateStrategy | indent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        umbrella: {{ template "helm-microservice.fullname" . }}
+        app: {{ .Values.pg_dump_hook.name }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        heritage: {{ .Release.Service }}
+        release: {{ .Release.Name }}
+    spec:
+      {{- if .Values.serviceAccount.useExisting.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.useExisting.name }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ template "helm-microservice.fullname" . }}
+      {{- end }}
+      {{- if .Values.pg_dump_hook.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.pg_dump_hook.imagePullSecrets | indent 8 }}
+      {{- end }}
+      restartPolicy: OnFailure
+      containers:
+{{- if .Values.useConfigConnector.enabled }}
+      - name: cloudsql-proxy
+        resources:
+          limits:
+            cpu: "200m"
+            memory: "100Mi"
+        image: gcr.io/cloudsql-docker/gce-proxy:1.17-alpine
+        env:
+          - name: CONNECTION_NAME
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: connectionName
+          - name: PROJECT_ID
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: projectId
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            /cloud_sql_proxy -instances=$(PROJECT_ID):$(CONNECTION_NAME)=tcp:3306 &
+            PID=$!
+            while true
+                do
+                    if [[ -f "/lifecycle/main-terminated" ]] 
+                    then
+                        kill $PID
+                        exit 0
+                    fi
+                    sleep 1
+                done
+        volumeMounts:
+          - name: lifecycle
+            mountPath: /lifecycle
+{{- end }}
+      - name: {{ .Values.pg_dump_hook.name }}
+        image: "{{ .Values.pg_dump_hook.image.repository }}:{{ .Values.pg_dump_hook.image.tag }}"
+        imagePullPolicy: {{ .Values.pg_dump_hook.image.pullPolicy }}
+        env:
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
+{{- if .Values.useConfigConnector.enabled }}
+          - name: DB_HOST
+            value: 127.0.0.1:3306
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: password
+          - name: DATABASE_URL
+            value: "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST)/{{ .Values.useConfigConnector.database.dbName }}?sslmode=disable"
+        volumeMounts:
+          - name: lifecycle
+            mountPath: /lifecycle
+{{- end }}
+
+        resources:
+{{ toYaml .Values.pg_dump_hook.resources | indent 10 }}
+{{- if .Values.useConfigConnector.enabled }}
+      volumes:
+        - name: lifecycle
+          emptyDir:
+{{- end }}
+  activeDeadlineSeconds: {{ .Values.pg_dump_hook.activeDeadlineSeconds }}
+{{- end }}

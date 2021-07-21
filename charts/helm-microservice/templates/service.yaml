@@ -18,9 +18,11 @@ spec:
     targetPort: {{ .Values.service.internalPort }}
     protocol: TCP
     name: {{ .Values.service.portName }}
+{{- if .Values.service.additionalPorts.enabled }}
+{{ toYaml .Values.service.additionalPorts.ports | indent 2 }}
+{{- end }}
   selector:
     app: {{ template "helm-microservice.fullname" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
-
