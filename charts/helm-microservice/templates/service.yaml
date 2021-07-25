@@ -3,10 +3,7 @@ kind: Service
 metadata:
   name: {{ template "helm-microservice.fullname" . }}
   labels:
-    app: {{ template "helm-microservice.fullname" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
+    {{- include "helm-microservice.labels" . | nindent 4 }}
   annotations:
     {{- range $key, $value := .Values.service.annotations }}
     {{ $key }}: {{ $value | quote }}
