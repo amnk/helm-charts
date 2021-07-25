@@ -19,7 +19,4 @@ spec:
 {{ toYaml .Values.service.additionalPorts.ports | indent 2 }}
 {{- end }}
   selector:
-    app: {{ template "helm-microservice.fullname" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
+    {{- include "helm-microservice.selectorLabels" . | nindent 4 }}
