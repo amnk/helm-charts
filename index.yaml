@@ -14,6 +14,21 @@ entries:
   helm-microservice:
   - apiVersion: v1
     appVersion: "1.0"
+    created: "2021-10-13T20:23:56.670700682Z"
+    description: A Helm chart for Kubernetes
+    digest: 0fcec43636f59fa97485b57d7917f78cca276bd161d4ed96f0fae63be4c7ccb5
+    home: https://github.com/skaeladmin/infra
+    maintainers:
+    - email: amnk@users.noreply.github.com
+      name: amnk
+    name: helm-microservice
+    sources:
+    - https://github.com/skaeladmin/infra/charts/helm-microservice
+    urls:
+    - https://github.com/amnk/helm-charts/releases/download/helm-microservice-0.1.4/helm-microservice-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v1
+    appVersion: "1.0"
     created: "2021-07-25T13:05:47.913280508Z"
     description: A Helm chart for Kubernetes
     digest: 1a4054f6ff496ed64c22d4eab7696eb72116e35012a309c14bec2eb75499f650
@@ -57,4 +72,4 @@ entries:
     urls:
     - https://github.com/amnk/helm-charts/releases/download/helm-microservice-0.1.1/helm-microservice-0.1.1.tgz
     version: 0.1.1
-generated: "2021-07-25T13:05:47.913293608Z"
+generated: "2021-10-13T20:23:56.670715683Z"
