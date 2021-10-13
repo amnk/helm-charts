@@ -76,6 +76,12 @@ spec:
       - name: {{ template "helm-microservice.fullname" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- if .Values.command }}
+        command:
+        {{- range $index, $c := .Values.command }}
+          - {{ $c }}
+        {{- end }}
+        {{- end }}
         {{- if .Values.args }}
         args:
         {{- range $index, $arg := .Values.args }}

@@ -74,6 +74,12 @@ startupProbe:
     enabled: false
     probe: {}
 
+# Define custom command for the container
+command: []
+
+# Define additional arguments to add to the command
+args: []
+
 gcpcreds_file:
   create: false
   path: /opt/backup/gce-babelfish-sa.json
