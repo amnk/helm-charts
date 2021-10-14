@@ -119,11 +119,26 @@ spec:
             }
             trap sig_handler EXIT
             sleep 10
-            migration up
+        {{- if (or .Values.migrations_hook.command .Values.migrations_hook.args) }}
+            {{ join " " (concat .Values.migrations_hook.command .Values.migrations_hook.args) }}
+        {{- end }}
         volumeMounts:
           - name: lifecycle
             mountPath: /lifecycle
 {{- end }}
+        {{- if (and .Values.migrations_hook.command (eq .Values.useConfigConnector.enabled false ))}}
+        command:
+        {{- range $index, $c := .Values.migrations_hook.command }}
+          - {{ $c }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.migrations_hook.args }}
+        args:
+        {{- range $index, $arg := .Values.migrations_hook.args }}
+          - {{ $arg }}
+        {{- end }}
+        {{- end }}
+
 
         resources:
 {{ toYaml .Values.migrations_hook.resources | indent 10 }}
