@@ -183,3 +183,22 @@ tolerations: []
 
 pg_restore_allowed:
   enabled: false
+
+# Persistence allows creating and mounting arbitrary amount of PVC.
+# For volumes with `existingClaimName` specified no PVC is created - esiting one will be used.
+persistence:
+  enabled: false
+  volumes: []
+#    - name: raw-existing
+#      accessMode: ReadOnlyMany
+#      size: 1Gi
+#      storageClass: standard-rwx
+#      mountPath: "/data/raw"
+#      readOnly: false
+#      existingClaimName: "existingRaw"
+#    - name: raw
+#      accessMode: ReadOnlyMany
+#      size: 1Gi
+#      storageClass: standard-rwx
+#      mountPath: "/data/raw"
+#      readOnly: false

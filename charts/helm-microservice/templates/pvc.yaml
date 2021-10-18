@@ -1,0 +1,26 @@
+{{- if .Values.persistence.enabled }}
+{{ $labels := include "helm-microservice.labels" . | nindent 4 }}
+{{- range include "helm-microservice.volumesWithClaims" . | fromJsonArray }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .name | trunc 58 }}
+  labels:
+    {{- printf $labels }}
+spec:
+  accessModes:
+    - {{ .accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .size | quote }}
+  {{- if .storageClass }}
+  {{- if (eq "-" .storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .storageClass }}"
+  {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- end }}

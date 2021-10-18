@@ -50,3 +50,15 @@ Selector labels
 app.kubernetes.io/name: {{ include "helm-microservice.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
+
+{{- define "helm-microservice.volumesWithClaims" -}}
+
+  {{ $newList := list }}
+  {{- range .Values.persistence.volumes }}
+  {{- if not .existingClaimName }}
+    {{ $newList = append $newList . }}
+  {{- end }}
+  {{- end }}
+
+  {{ toJson $newList }}
+{{- end }}

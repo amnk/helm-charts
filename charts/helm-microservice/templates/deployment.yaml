@@ -1,4 +1,4 @@
-{{ $mounts_exist := or .Values.minikube.enabled .Values.gcpcreds_file.create  }}
+{{ $mounts_exist := or .Values.minikube.enabled .Values.gcpcreds_file.create .Values.persistence.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -187,6 +187,15 @@ spec:
             name: gcp-creds
             subPath: gcp-creds-file
         {{- end }}
+
+        {{- if .Values.persistence.enabled }}
+        {{- range .Values.persistence.volumes }}
+          - name: {{ .name }}
+            mountPath: {{ .mountPath }}
+        {{- end }} 
+        {{- end }}
+
+
       volumes:
       {{- if .Values.minikube.enabled }}
         - name: host-source
@@ -197,5 +206,16 @@ spec:
         - name: gcp-creds
           secret:
             secretName: {{ template "helm-microservice.fullname" . }}-gcp-secrets
+      {{- end }}
+      {{- if .Values.persistence.enabled }}
+      {{- range .Values.persistence.volumes }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+          {{- if .existingClaimName }}
+            claimName: {{ .existingClaimName }}
+          {{- else }}
+            claimName: {{ .name }}
+          {{- end }}
+      {{- end }} 
       {{- end }}
     {{- end }}
