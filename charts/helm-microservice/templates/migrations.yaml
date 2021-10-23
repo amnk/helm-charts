@@ -87,12 +87,10 @@ spec:
         image: "{{ .Values.migrations_hook.image.repository }}:{{ .Values.migrations_hook.image.tag }}"
         imagePullPolicy: {{ .Values.migrations_hook.image.pullPolicy }}
         env:
-          {{- range $key, $value := .Values.env }}
+          {{- range $key, $value := .Values.migration.env }}
           - name: {{ $key | quote }}
             value: {{ $value | quote }}
           {{- end }}
-          - name: MIGRATION_PATH
-            value: "/opt/migration/migrations"
 {{- if .Values.useConfigConnector.enabled }}
           - name: DB_HOST
             value: 127.0.0.1:3306
