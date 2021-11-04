@@ -7,10 +7,10 @@ metadata:
     {{- include "helm-microservice.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  {{- if .Values.updateStrategy }}
+ {{- if .Values.updateStrategy }}
   strategy:
 {{ toYaml .Values.updateStrategy | indent 4 }}
-  {{- end }}
+ {{- end }}
   selector:
     matchLabels:
       {{- include "helm-microservice.selectorLabels" . | nindent 6 }}
@@ -76,18 +76,18 @@ spec:
       - name: {{ template "helm-microservice.fullname" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        {{- if .Values.command }}
+{{- if .Values.command }}
         command:
         {{- range $index, $c := .Values.command }}
           - {{ $c }}
         {{- end }}
-        {{- end }}
-        {{- if .Values.args }}
+{{- end }}
+{{- if .Values.args }}
         args:
         {{- range $index, $arg := .Values.args }}
           - {{ $arg }}
         {{- end }}
-        {{- end }}
+{{- end }}
         ports:
           - name: {{ .Values.service.portName }}
             containerPort: {{ .Values.service.internalPort }}
@@ -97,6 +97,9 @@ spec:
             containerPort: {{ .targetPort }}
         {{- end }}
 {{- end }}
+{{- if .Values.envFrom }}
+        envFrom:
+{{ toYaml .Values.envFrom | indent 10 }}
         env:
           - name: MY_POD_NAME
             valueFrom:
@@ -126,88 +129,88 @@ spec:
           - name: {{ $key | quote }}
             value: {{ $value | quote }}
           {{- end }}
-        {{- if .Values.livenessProbe.enabled }}
+{{- if .Values.livenessProbe.enabled }}
         livenessProbe:
-          {{ if .Values.livenessProbe.override.enabled }}
+{{ if .Values.livenessProbe.override.enabled }}
 {{ toYaml .Values.livenessProbe.override.probe | indent 10 }}
-          {{ else }}
+{{ else }}
           httpGet:
             path: {{ .Values.livenessProbe.httpProbePath }}
             port: {{ .Values.service.internalPort }}
             scheme: HTTP
-          {{ end }}
+{{ end }}
           failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           successThreshold: {{ .Values.livenessProbe.successThreshold }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
-        {{- end }}
+{{- end }}
 
-        {{- if .Values.readinessProbe.enabled }}
+{{- if .Values.readinessProbe.enabled }}
         readinessProbe:
-          {{ if .Values.readinessProbe.override.enabled }}
+{{ if .Values.readinessProbe.override.enabled }}
 {{ toYaml .Values.readinessProbe.override.probe | indent 10 }}
-          {{ else }}
+{{ else }}
           httpGet:
             path: {{ .Values.readinessProbe.httpProbePath }}
             port: {{ .Values.service.internalPort }}
             scheme: HTTP
-          {{ end }}
+{{ end }}
           initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
-        {{- end }}
+{{- end }}
 
-        {{- if .Values.startupProbe.enabled }}
+{{- if .Values.startupProbe.enabled }}
         startupProbe:
-          {{ if .Values.startupProbe.override.enabled }}
+{{ if .Values.startupProbe.override.enabled }}
 {{ toYaml .Values.startupProbe.override.probe | indent 10 }}
-          {{ else }}
+{{ else }}
           httpGet:
             path: {{ .Values.startupProbe.httpProbePath }}
             port: {{ .Values.service.internalPort }}
             scheme: HTTP
-          {{ end }}
+{{ end }}
           initialDelaySeconds: {{ .Values.startupProbe.initialDelaySeconds }}
           timeoutSeconds: {{ .Values.startupProbe.timeoutSeconds }}
           periodSeconds: {{ .Values.startupProbe.periodSeconds }}
           failureThreshold: {{ .Values.startupProbe.failureThreshold }}
-        {{- end }}
+{{- end }}
 
         resources:
 {{ toYaml .Values.resources | indent 10 }}
-    {{ if $mounts_exist }}
+{{ if $mounts_exist }}
         volumeMounts:
-        {{- if .Values.minikube.enabled }}
+{{- if .Values.minikube.enabled }}
           - mountPath: {{ .Values.mountPath }}
             name: host-source
-        {{- end }}
-        {{- if .Values.gcpcreds_file.create }}
+{{- end }}
+{{- if .Values.gcpcreds_file.create }}
           - mountPath: {{ .Values.gcpcreds_file.path }}
             name: gcp-creds
             subPath: gcp-creds-file
-        {{- end }}
+{{- end }}
 
-        {{- if .Values.persistence.enabled }}
+{{- if .Values.persistence.enabled }}
         {{- range .Values.persistence.volumes }}
           - name: {{ .name }}
             mountPath: {{ .mountPath }}
         {{- end }} 
-        {{- end }}
+{{- end }}
 
 
       volumes:
-      {{- if .Values.minikube.enabled }}
+{{- if .Values.minikube.enabled }}
         - name: host-source
           hostPath:
             path: {{ .Values.minikube.path }}/{{ .Values.minikube.hostPath }}
-      {{- end }}
-      {{- if .Values.gcpcreds_file.create }}
+{{- end }}
+{{- if .Values.gcpcreds_file.create }}
         - name: gcp-creds
           secret:
             secretName: {{ template "helm-microservice.fullname" . }}-gcp-secrets
-      {{- end }}
-      {{- if .Values.persistence.enabled }}
+{{- end }}
+{{- if .Values.persistence.enabled }}
       {{- range .Values.persistence.volumes }}
         - name: {{ .name }}
           persistentVolumeClaim:
@@ -217,5 +220,5 @@ spec:
             claimName: {{ .name }}
           {{- end }}
       {{- end }} 
-      {{- end }}
-    {{- end }}
+{{- end }}
+{{- end }}
