@@ -202,3 +202,9 @@ persistence:
 #      storageClass: standard-rwx
 #      mountPath: "/data/raw"
 #      readOnly: false
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPU: 70
+  targetMemory: 70 
