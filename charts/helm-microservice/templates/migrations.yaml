@@ -91,6 +91,10 @@ spec:
           - name: {{ $key | quote }}
             value: {{ $value | quote }}
           {{- end }}
+          {{- range $key, $value := .Values.env }}
+          - name: {{ $key | quote }}
+            value: {{ $value | quote }}
+          {{- end }}
 {{- if .Values.useConfigConnector.enabled }}
           - name: DB_HOST
             value: 127.0.0.1:3306

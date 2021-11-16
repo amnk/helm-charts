@@ -7,10 +7,10 @@ metadata:
     {{- include "helm-microservice.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
- {{- if .Values.updateStrategy }}
+{{- if .Values.updateStrategy }}
   strategy:
 {{ toYaml .Values.updateStrategy | indent 4 }}
- {{- end }}
+{{- end }}
   selector:
     matchLabels:
       {{- include "helm-microservice.selectorLabels" . | nindent 6 }}
@@ -100,6 +100,7 @@ spec:
 {{- if .Values.envFrom }}
         envFrom:
 {{ toYaml .Values.envFrom | indent 10 }}
+{{- end }}
         env:
           - name: MY_POD_NAME
             valueFrom:
