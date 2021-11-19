@@ -216,3 +216,5 @@ autoscaling:
   maxReplicas: 2
   targetCPU: 70
   targetMemory: 70 
+
+nodeSelector: {}
