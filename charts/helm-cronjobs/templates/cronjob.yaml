@@ -1,0 +1,98 @@
+{{- $chart_name := .Chart.Name }}
+{{- $chart_version := .Chart.Version | replace "+" "_" }}
+{{- $release_name := .Release.Name }}
+
+{{- range $job := .Values.jobs }}
+{{- with $job }}
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ $release_name }}-{{ required (printf "One of the jobs does not have .name") .name }}"
+  labels:
+    chart: "{{ $chart_name }}-{{ $chart_version }}"
+    {{- if and (hasKey . "metadata") (hasKey . "metadata.labels") }}
+{{ toYaml .metadata.labels | indent 4 }}
+    {{- end }}
+spec:
+  concurrencyPolicy: {{ required (printf "concurrencyPolicy is missing for %s" .name) .concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ required (printf "failedJobsHistoryLimit is missing for %s" .name) .failedJobsHistoryLimit }}
+  jobTemplate:
+    metadata:
+      labels:
+        cronjob: {{ .name }}
+        app: {{ $release_name }}
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ $release_name }}
+            cronjob: {{ .name }}
+        spec:
+        {{- if hasKey . "serviceAccount" }}
+        {{- if hasKey .serviceAccount "name" }}
+          serviceAccountName: {{ .serviceAccount.name }}
+        {{- else }}
+          serviceAccountName: {{ .name }}
+        {{- end }}
+        {{- end }}
+        {{- if hasKey . "securityContext" }}
+          {{- if .securityContext.runAsUser }}
+          securityContext:
+            runAsUser: {{ .securityContext.runAsUser }}
+            {{- if .securityContext.runAsGroup }}
+            runAsGroup: {{ .securityContext.runAsGroup }}
+            {{- end }}
+            {{- if .securityContext.fsGroup }}
+            fsGroup: {{ .securityContext.fsGroup }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+          containers:
+          - image: "{{ required (printf "image.repository is missing for %s" .name) .image.repository }}:{{ required (printf "image.tag is missing for %s" .name) .image.tag }}"
+            imagePullPolicy: {{ .image.imagePullPolicy | default "IfNotPresent" }}
+            name: {{ .name }}
+            {{- with .env }}
+            env:
+{{ toYaml . | indent 12 }}
+            {{- end }}
+            {{- with .envFrom }}
+            envFrom:
+{{ toYaml . | indent 12 }}
+            {{- end }}
+            {{- if .command }}
+            command: {{ .command }}
+            {{- end }}
+            {{- with .args }}
+            args:
+{{ toYaml . | indent 12 }}
+              {{- end }}
+            {{- with .resources }}
+            resources:
+{{ toYaml . | indent 14 }}
+            {{- end }}
+            {{- with .volumeMounts }}
+            volumeMounts:
+{{ toYaml . | indent 12 }}
+            {{- end }}
+          {{- with .nodeSelector }}
+          nodeSelector:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          {{- with .affinity }}
+          affinity:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          {{- with .tolerations }}
+          tolerations:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          restartPolicy: {{ required (printf "restartPolicy is missing for %s" .name) .restartPolicy }}
+          {{- with .volumes }}
+          volumes:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+  schedule: {{ required (printf "Schedule is missing for %s" .name) .schedule | quote }}
+  successfulJobsHistoryLimit: {{ required (printf "successfulJobsHistoryLimit is missing for %s" .name) .successfulJobsHistoryLimit }}
+{{- end }}
+{{- end }}

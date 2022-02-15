@@ -1,0 +1,13 @@
+# An array of jobs that this Chart should install
+jobs: []
+#jobs:
+#  - name: hello-world
+#    image:
+#      repository: hello-world
+#      tag: latest
+#      imagePullPolicy: IfNotPresent
+#    schedule: "* * * * *"
+#    failedJobsHistoryLimit: 1
+#    successfulJobsHistoryLimit: 3
+#    concurrencyPolicy: Allow
+#    restartPolicy: OnFailure
