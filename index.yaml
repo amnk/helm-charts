@@ -11,6 +11,20 @@ entries:
     urls:
     - https://github.com/amnk/helm-charts/releases/download/cert-manager-config-0.1.0/cert-manager-config-0.1.0.tgz
     version: 0.1.0
+  helm-cronjobs:
+  - apiVersion: v1
+    created: "2022-02-16T12:25:51.585050364Z"
+    description: A chart for cron jobs
+    digest: 62ef47777a150ce92c057248487eebcaaf8bd879b19cde8921f41c2e8ef688b9
+    home: https://github.com/amnk
+    keywords:
+    - cron
+    name: helm-cronjobs
+    sources:
+    - https://github.com/amnk
+    urls:
+    - https://github.com/amnk/helm-charts/releases/download/helm-cronjobs-0.0.1/helm-cronjobs-0.0.1.tgz
+    version: 0.0.1
   helm-microservice:
   - apiVersion: v1
     appVersion: "1.0"
@@ -207,4 +221,4 @@ entries:
     urls:
     - https://github.com/amnk/helm-charts/releases/download/helm-microservice-0.1.1/helm-microservice-0.1.1.tgz
     version: 0.1.1
-generated: "2021-12-29T20:35:55.500258879Z"
+generated: "2022-02-16T12:25:51.585218558Z"
