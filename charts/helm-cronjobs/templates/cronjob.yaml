@@ -1,7 +1,7 @@
 {{- $chart_name := .Chart.Name }}
 {{- $chart_version := .Chart.Version | replace "+" "_" }}
 {{- $release_name := .Release.Name }}
-
+{{- $commonLabels := include "helm-cronjobs.labels" . }}
 {{- range $job := .Values.jobs }}
 {{- with $job }}
 ---
@@ -10,7 +10,7 @@ kind: CronJob
 metadata:
   name: "{{ $release_name }}-{{ required (printf "One of the jobs does not have .name") .name }}"
   labels:
-    chart: "{{ $chart_name }}-{{ $chart_version }}"
+    {{- $commonLabels | nindent 4 }}
     {{- if and (hasKey . "metadata") (hasKey . "metadata.labels") }}
 {{ toYaml .metadata.labels | indent 4 }}
     {{- end }}
@@ -21,12 +21,10 @@ spec:
     metadata:
       labels:
         cronjob: {{ .name }}
-        app: {{ $release_name }}
     spec:
       template:
         metadata:
           labels:
-            app: {{ $release_name }}
             cronjob: {{ .name }}
         spec:
         {{- if hasKey . "serviceAccount" }}
