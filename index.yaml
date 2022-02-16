@@ -13,6 +13,19 @@ entries:
     version: 0.1.0
   helm-cronjobs:
   - apiVersion: v1
+    created: "2022-02-16T20:33:31.782874626Z"
+    description: A chart for cron jobs
+    digest: 60389a15c6688a9056e14a114d00e1133a73360c5d2544a4c335ecb348d81d0a
+    home: https://github.com/amnk
+    keywords:
+    - cron
+    name: helm-cronjobs
+    sources:
+    - https://github.com/amnk
+    urls:
+    - https://github.com/amnk/helm-charts/releases/download/helm-cronjobs-0.0.2/helm-cronjobs-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v1
     created: "2022-02-16T12:25:51.585050364Z"
     description: A chart for cron jobs
     digest: 62ef47777a150ce92c057248487eebcaaf8bd879b19cde8921f41c2e8ef688b9
@@ -221,4 +234,4 @@ entries:
     urls:
     - https://github.com/amnk/helm-charts/releases/download/helm-microservice-0.1.1/helm-microservice-0.1.1.tgz
     version: 0.1.1
-generated: "2022-02-16T12:25:51.585218558Z"
+generated: "2022-02-16T20:33:31.782926724Z"
