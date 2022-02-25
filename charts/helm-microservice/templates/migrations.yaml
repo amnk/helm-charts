@@ -86,6 +86,20 @@ spec:
       - name: {{ .Values.migrations_hook.name }}
         image: "{{ .Values.migrations_hook.image.repository }}:{{ .Values.migrations_hook.image.tag }}"
         imagePullPolicy: {{ .Values.migrations_hook.image.pullPolicy }}
+{{- if .Values.envFrom }}
+        envFrom:
+        {{- range $key, $value := .Values.envFrom }}
+        {{- if eq $key "secretRef" }}
+        - {{ $key }}:
+            name: {{ $value | quote }}
+        {{- else if eq $key "configMapRef" }}
+        - {{ $key }}:
+            name: {{ $value | quote }}
+        {{- end }}
+
+        {{- end }}
+{{- end }}
+
         env:
           {{- range $key, $value := .Values.migrations_hook.env }}
           - name: {{ $key | quote }}
@@ -95,10 +109,6 @@ spec:
           - name: {{ $key | quote }}
             value: {{ $value | quote }}
           {{- end }}
-{{- if .Values.envFrom }}
-        envFrom:
-{{ toYaml .Values.envFrom | indent 10 }}
-{{- end }}
 
 {{- if .Values.useConfigConnector.enabled }}
           - name: DB_HOST

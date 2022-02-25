@@ -97,10 +97,22 @@ spec:
             containerPort: {{ .targetPort }}
         {{- end }}
 {{- end }}
+
+
 {{- if .Values.envFrom }}
         envFrom:
-{{ toYaml .Values.envFrom | indent 10 }}
+        {{- range $key, $value := .Values.envFrom }}
+        {{- if eq $key "secretRef" }}
+        - {{ $key }}:
+            name: {{ $value | quote }}
+        {{- else if eq $key "configMapRef" }}
+        - {{ $key }}:
+            name: {{ $value | quote }}
+        {{- end }}
+
+        {{- end }}
 {{- end }}
+
         env:
           - name: MY_POD_NAME
             valueFrom:
