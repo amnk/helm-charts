@@ -93,12 +93,12 @@ env:
   LOGGING_PROD_MODE: true
 
 ## valuenvFrom can be used to pass configmaps or secrets as environment
-#envFrom: {}
-envFrom:
-  configMapRef: 
-    1: env-configmap
-  secretRef: 
-    1: env-secrets
+envFrom: {}
+#envFrom:
+#  configMapRef: 
+#    1: env-configmap
+#  secretRef: 
+#    1: env-secrets
 
 resources:
   requests:
