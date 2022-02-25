@@ -1,0 +1,46 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  # JOB to run change detection
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      # Expose matched filters as job 'packages' output variable
+      charts: ${{ steps.filter.outputs.changes }}
+    steps:
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          helm-microservice:
+            - 'charts/helm-microservice/**'
+          helm-cronjobs:
+            - 'charts/helm-cronjobs/**'
+
+  # JOB to build and test each of modified packages
+  build:
+    needs: changes
+    strategy:
+      matrix:
+        # Parse JSON array containing names of all filters matching any of changed files
+        # e.g. ['package1', 'package2'] if both package folders contains changes
+        chart: ${{ fromJSON(needs.changes.outputs.charts) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests for ${{ matrix.chart }}
+        uses: stefanprodan/kube-tools@v1
+        with:
+          helmv3: 3.7.2
+          kubeval: v0.16.1
+          command: |
+            echo "Run kubeval"
+            helmv3 template ./charts/${{ matrix.chart }} | kubeval --strict
+
+concurrency: 
+  group: ${{ github.ref }}
+  cancel-in-progress: true
