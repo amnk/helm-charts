@@ -92,11 +92,13 @@ env:
   HEALTH_ENABLED: true
   LOGGING_PROD_MODE: true
 
-## envFrom can be used to pass configmaps or secrets as environment
+## valuenvFrom can be used to pass configmaps or secrets as environment
 envFrom: {}
 #envFrom:
-#  configMapRef: env-configmap
-#  secretRef: env-secrets
+#  configMapRef: 
+#    1: env-configmap
+#  secretRef: 
+#    1: env-secrets
 
 resources:
   requests:

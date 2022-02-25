@@ -101,16 +101,20 @@ spec:
 
 {{- if .Values.envFrom }}
         envFrom:
-        {{- range $key, $value := .Values.envFrom }}
-        {{- if eq $key "secretRef" }}
-        - {{ $key }}:
+        {{- if .Values.envFrom.secretRef }}
+        {{- range $key, $value := .Values.envFrom.secretRef }}
+        - secretRef:
             name: {{ $value | quote }}
-        {{- else if eq $key "configMapRef" }}
-        - {{ $key }}:
-            name: {{ $value | quote }}
+        {{- end }}
         {{- end }}
 
+        {{- if .Values.envFrom.configMapRef }}
+        {{- range $key, $value := .Values.envFrom.configMapRef }}
+        - configMapRef:
+            name: {{ $value | quote }}
         {{- end }}
+        {{- end }}
+
 {{- end }}
 
         env:
