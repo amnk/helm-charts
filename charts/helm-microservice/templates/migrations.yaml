@@ -58,12 +58,12 @@ spec:
           - name: CONNECTION_NAME
             valueFrom:
               secretKeyRef:
-                name: cloudsql-db-credentials
+                name: "{{ .Values.useConfigConnector.secretRef }}"
                 key: connectionName
           - name: PROJECT_ID
             valueFrom:
               secretKeyRef:
-                name: cloudsql-db-credentials
+                name: "{{ .Values.useConfigConnector.secretRef }}"
                 key: projectId
         command: ["/bin/sh", "-c"]
         args:
@@ -120,12 +120,12 @@ spec:
           - name: DB_USER
             valueFrom:
               secretKeyRef:
-                name: cloudsql-db-credentials
+                name: "{{ .Values.useConfigConnector.secretRef }}"
                 key: username
           - name: DB_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: cloudsql-db-credentials
+                name: "{{ .Values.useConfigConnector.secretRef }}"
                 key: password
           - name: DATABASE_URL
             value: "postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST)/{{ .Values.useConfigConnector.database.dbName }}?sslmode=disable"
