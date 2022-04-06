@@ -63,12 +63,12 @@ spec:
           - name: CONNECTION_NAME
             valueFrom:
               secretKeyRef:
-                name: cloudsql-db-credentials
+                name: "{{ .Values.useConfigConnector.secretRef }}"
                 key: connectionName
           - name: PROJECT_ID
             valueFrom:
               secretKeyRef:
-                name: cloudsql-db-credentials
+                name: "{{ .Values.useConfigConnector.secretRef }}"
                 key: projectId
         command: ["/cloud_sql_proxy",
                   "-instances=$(PROJECT_ID):$(CONNECTION_NAME)=tcp:3306"]

@@ -121,6 +121,7 @@ useConfigConnector:
   google:
     region: us-east1-c
     projectId: skael-hydra
+  secretRef: cloudsql-db-credentials
 
 minikube:
   enabled: false
