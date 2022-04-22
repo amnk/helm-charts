@@ -24,6 +24,9 @@ metadata:
     {{- end }}
   {{- end }}
 spec:
+{{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+{{- end }}
 {{ $subDomain := .Values.ingress.subDomain | default "" }}
   rules:
   {{ $path := .Values.ingress.path }}

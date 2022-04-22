@@ -41,6 +41,7 @@ ingress:
     enabled: false
   ## This one can be used to insert one templated annotation. Ugly, but I could not find a better way of doing it :(
   hackAnnotations: false
+  className: null
 
 livenessProbe:
   enabled: true
@@ -259,3 +260,6 @@ serviceMonitor:
   #   targetLabel: nodename
   #   replacement: $1
   #   action: replace
+  #
+
+
