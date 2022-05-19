@@ -1,10 +1,12 @@
 {{- if .Values.ingress.enabled -}}
 {{- $serviceName := include "helm-microservice.fullname" . -}}
 {{- $servicePort := .Values.ingress.servicePortOverride | default .Values.service.portName -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1beta1
 {{- else -}}
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
@@ -36,9 +38,17 @@ spec:
       http:
         paths:
           - path: {{ $path | quote }}
+            pathType: "Prefix"
             backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $serviceName }}
+                port:
+                  name: {{ $servicePort }}
+              {{- else }}
               serviceName: {{ $serviceName }}
               servicePort: {{ $servicePort }}
+              {{- end -}}
   {{- end -}}
 {{- if .Values.ingress.tls }}
   tls:
