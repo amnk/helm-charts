@@ -41,6 +41,9 @@ helm.sh/chart: {{ include "helm-microservice.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- range $key, $value := .Values.commonLabels }}
+{{ $key }}: {{ $value }}
+{{- end }}
 {{- end -}}
 
 {{/*
@@ -62,3 +65,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
   {{ toJson $newList }}
 {{- end }}
+
+{{/*
+Common annotations
+*/}}
+{{- define "helm-microservice.annotations" -}}
+{{- range $key, $value := .Values.commonAnnotations }}
+{{ $key }}: {{ $value }}
+{{- end }}
+{{- end -}}
+

@@ -8,6 +8,8 @@ metadata:
   {{- end }}
   labels:
     {{- include "helm-microservice.labels" . | nindent 4 }}
+  annotations:
+    {{- include "helm-microservice.annotations" . | nindent 4 }}
 spec:
   endpoints:
   - port: {{ .Values.service.portName }}

@@ -4,13 +4,10 @@ kind: Job
 metadata:
   name: {{ .Values.migrations_hook.name }}-{{ template "helm-microservice.fullname" . }}
   labels:
-    umbrella: {{ template "helm-microservice.fullname" . }}
-    app: {{ .Values.migrations_hook.name }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
+    {{- include "helm-microservice.labels" . | nindent 4 }}
   {{- if .Values.migrations_hook.annotations }}
   annotations:
+    {{- include "helm-microservice.annotations" . | nindent 4 }}
     {{- range $key, $value := .Values.migrations_hook.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
@@ -26,11 +23,7 @@ spec:
   template:
     metadata:
       labels:
-        umbrella: {{ template "helm-microservice.fullname" . }}
-        app: {{ .Values.migrations_hook.name }}
-        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-        heritage: {{ .Release.Service }}
-        release: {{ .Release.Name }}
+        {{- include "helm-microservice.labels" . | nindent 8 }}
     spec:
       {{- if .Values.serviceAccount.useExisting.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.useExisting.name }}

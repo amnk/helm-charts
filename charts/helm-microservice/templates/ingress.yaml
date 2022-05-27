@@ -12,6 +12,7 @@ kind: Ingress
 metadata:
   name: {{ template "helm-microservice.fullname" . }}
   annotations:
+    {{- include "helm-microservice.annotations" . | nindent 4 }}
     {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}

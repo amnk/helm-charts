@@ -5,6 +5,8 @@ metadata:
   name: {{ template "helm-microservice.fullname" . }}
   labels:
     {{- include "helm-microservice.labels" . | nindent 4 }}
+  annotations:
+    {{- include "helm-microservice.annotations" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
 {{- if .Values.updateStrategy }}

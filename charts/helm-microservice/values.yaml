@@ -262,4 +262,8 @@ serviceMonitor:
   #   action: replace
   #
 
+# Common labels that will be added to each object created by this Chart
+commonLabels: {}
 
+# Common annotations that will be added to each object created by this Chart
+commonAnnotations:  {}

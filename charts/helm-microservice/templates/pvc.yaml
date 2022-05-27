@@ -1,5 +1,6 @@
 {{- if .Values.persistence.enabled }}
 {{ $labels := include "helm-microservice.labels" . | nindent 4 }}
+{{ $annotations:= include "helm-microservice.annotations" . | nindent 4 }}
 {{- range include "helm-microservice.volumesWithClaims" . | fromJsonArray }}
 ---
 kind: PersistentVolumeClaim
@@ -8,6 +9,8 @@ metadata:
   name: {{ .name | trunc 58 }}
   labels:
     {{- printf $labels }}
+  annotations:
+    {{- printf $annotations }}
 spec:
   accessModes:
     - {{ .accessMode | quote }}
